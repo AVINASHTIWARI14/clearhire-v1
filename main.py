@@ -1,11 +1,19 @@
 from fastapi import FastAPI
-app=FastAPI()
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class InterviewResponse(BaseModel):
+    text: str
+    candidate_name: str = "Anonymous"
+
 @app.get("/")
 def home():
-    return {"message":"cleanhire backend is running"}
+    return {"message": "clearhire backend is running"}
+
 @app.post("/analyze")
-def analyze(response: dict):
-    text = response["text"]
+def analyze(response: InterviewResponse):
+    text = response.text
     text_lower = text.lower()
 
     filler_words = ["um", "uh", "like", "you know", "basically", "literally"]
@@ -13,10 +21,13 @@ def analyze(response: dict):
 
     hedging_words = ["i think", "i believe", "maybe", "perhaps", "i guess", "probably", "not sure", "i feel like"]
     found_hedging = [word for word in hedging_words if word in text_lower]
+    
     total_signals = len(found_fillers) + len(found_hedging)
     confidence_score = max(0, 100 - (total_signals * 10))
+    
     return {
         "received": text,
+        "candidate_name": response.candidate_name,
         "length": len(text),
         "filler_words_found": found_fillers,
         "filler_count": len(found_fillers),
