@@ -32,6 +32,14 @@ def analyze(response: InterviewResponse):
 
     total_signals = len(found_fillers) + len(found_hedging)
     confidence_score = max(0, 100 - (total_signals * 10) - length_penalty)
+    
+    deception_likelihood = 100 - confidence_score
+    if deception_likelihood >= 70:
+        risk_level = "High"
+    elif deception_likelihood >= 40:
+        risk_level = "Medium"
+    else:
+        risk_level = "Low"
 
     return {
         "received": text,
@@ -41,5 +49,7 @@ def analyze(response: InterviewResponse):
         "filler_count": len(found_fillers),
         "hedging_words_found": found_hedging,
         "hedging_count": len(found_hedging),
-        "confidence_score": confidence_score
+        "confidence_score": confidence_score,
+        "deception_likelihood": deception_likelihood,
+        "risk_level": risk_level
     }
