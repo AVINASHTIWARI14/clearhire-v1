@@ -21,14 +21,22 @@ def analyze(response: InterviewResponse):
 
     hedging_words = ["i think", "i believe", "maybe", "perhaps", "i guess", "probably", "not sure", "i feel like"]
     found_hedging = [word for word in hedging_words if word in text_lower]
-    
+
+    word_count = len(text.split())
+    if word_count < 10:
+        length_penalty = 30
+    elif word_count < 20:
+        length_penalty = 15
+    else:
+        length_penalty = 0
+
     total_signals = len(found_fillers) + len(found_hedging)
-    confidence_score = max(0, 100 - (total_signals * 10))
-    
+    confidence_score = max(0, 100 - (total_signals * 10) - length_penalty)
+
     return {
         "received": text,
         "candidate_name": response.candidate_name,
-        "length": len(text),
+        "word_count": word_count,
         "filler_words_found": found_fillers,
         "filler_count": len(found_fillers),
         "hedging_words_found": found_hedging,
