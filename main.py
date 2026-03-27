@@ -52,7 +52,15 @@ def analyze(response: InterviewResponse):
         risk_level = "Medium"
     else:
         risk_level = "Low"
-
+    signals = []
+    if len(found_fillers) > 0:
+        signals.append(f"{len(found_fillers)} filler word(s) detected")
+    if len(found_hedging) > 0:
+        signals.append(f"{len(found_hedging)} hedging word(s) detected")
+    if len(contradictions_found) > 0:
+        signals.append(f"Contradiction found: {', '.join(contradictions_found)}")
+    if word_count < 10:
+        signals.append("Response too short")
     return {
         "received": text,
         "candidate_name": response.candidate_name,
@@ -65,5 +73,6 @@ def analyze(response: InterviewResponse):
         "contradiction_count": len(contradictions_found),
         "confidence_score": confidence_score,
         "deception_likelihood": deception_likelihood,
-        "risk_level": risk_level
+        "risk_level": risk_level,
+        "signals": signals
     }
