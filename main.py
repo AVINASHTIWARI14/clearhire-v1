@@ -22,6 +22,18 @@ def analyze(response: InterviewResponse):
     hedging_words = ["i think", "i believe", "maybe", "perhaps", "i guess", "probably", "not sure", "i feel like"]
     found_hedging = [word for word in hedging_words if word in text_lower]
 
+    contradiction_pairs = [
+        ("always", "never"),
+        ("expert", "beginner"),
+        ("experienced", "fresher"),
+        ("yes", "no"),
+        ("know", "don't know")
+    ]
+    contradictions_found = []
+    for pair in contradiction_pairs:
+        if pair[0] in text_lower and pair[1] in text_lower:
+            contradictions_found.append(f"{pair[0]} vs {pair[1]}")
+
     word_count = len(text.split())
     if word_count < 10:
         length_penalty = 30
@@ -30,9 +42,9 @@ def analyze(response: InterviewResponse):
     else:
         length_penalty = 0
 
-    total_signals = len(found_fillers) + len(found_hedging)
+    total_signals = len(found_fillers) + len(found_hedging) + len(contradictions_found)
     confidence_score = max(0, 100 - (total_signals * 10) - length_penalty)
-    
+
     deception_likelihood = 100 - confidence_score
     if deception_likelihood >= 70:
         risk_level = "High"
@@ -49,6 +61,8 @@ def analyze(response: InterviewResponse):
         "filler_count": len(found_fillers),
         "hedging_words_found": found_hedging,
         "hedging_count": len(found_hedging),
+        "contradictions_found": contradictions_found,
+        "contradiction_count": len(contradictions_found),
         "confidence_score": confidence_score,
         "deception_likelihood": deception_likelihood,
         "risk_level": risk_level
