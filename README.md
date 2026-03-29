@@ -27,3 +27,5 @@ An AI-powered backend API that analyzes interview responses for behavioral signa
 ## API Endpoints
 - `GET /` — Health check
 - `POST /analyze` — Analyze interview response
+## Live API
+https://clearhire-v1-production.up.railway.app/docs
